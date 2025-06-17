@@ -1,11 +1,14 @@
-import React from 'react';
- 
-const Sidebar: React.FC = () => {
-    return (
-        <div>
-          <h2 className="font-bold text-lg">Sidebar</h2>
-        </div>
-      );
-}
- 
+const Sidebar = () => {
+  return (
+    <aside className="bg-slate-200 p-4 border-slate-300 border-r w-1/6">
+      <div className="mb-2 font-semibold text-slate-700">Navigation</div>
+      <ul className="space-y-2 text-slate-600 text-sm">
+        <li className="bg-slate-300 p-2 rounded">Today</li>
+        <li className="bg-slate-300 p-2 rounded">This Week</li>
+        <li className="bg-slate-300 p-2 rounded">Projects</li>
+      </ul>
+    </aside>
+  );
+};
+
 export default Sidebar;
