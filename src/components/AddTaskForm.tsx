@@ -37,12 +37,12 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
         <option value="in progress">In Progress</option>
         <option value="done">Done</option>
       </select>
-      <button
-        type="submit"
-        className="bg-violet-700 hover:bg-violet-800 p-2 rounded w-full font-semibold text-white"
-      >
-        Add Task
-      </button>
+    <button
+      type="submit"
+      className="flex justify-center items-center gap-2 bg-slate-600 hover:bg-slate-700 shadow-sm px-4 py-2 rounded-md w-full font-semibold text-white transition"
+    >
+      Add Task
+    </button>
     </form>
   );
 };
