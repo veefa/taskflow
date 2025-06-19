@@ -1,15 +1,9 @@
+import type { Task, TaskStatus } from "../App";
 import AddTaskForm from "./AddTaskForm";
-
-type TaskStatus = "not started" | "in progress" | "done";
-interface Task {
-  id: number;
-  title: string;
-  status: TaskStatus;
-}
 
 interface TaskListProps {
   tasks: Task[];
-  onAddTask: (title: string, status: TaskStatus) => void;
+  onAddTask: (title: string, status: TaskStatus, dueDate?: string) => void;
   onStatusClick: (id: number) => void;
 }
 
@@ -36,7 +30,9 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onAddTask, onStatusClick }) 
           className="flex justify-between items-center bg-slate-100 p-3 border border-slate-300 rounded">
           <div>
             <div className="font-medium text-slate-700">{task.title}</div>
-            <div className="text-slate-500 text-sm">Due: --/--/----</div>
+            <div className="text-slate-500 text-sm">
+              Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "--/--/----"}
+            </div>
           </div>
           <button
             onClick={() => onStatusClick(task.id)}

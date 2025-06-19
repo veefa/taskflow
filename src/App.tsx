@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import TaskList from './components/TaskList';
-import CalendarTimeline from './components/CalendarTimeline';
+import React, { useState } from "react";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
+import TaskList from "./components/TaskList";
+import CalendarTimeline from "./components/CalendarTimeline";
 
 // Define types here so all components can use them
 export type TaskStatus = "not started" | "in progress" | "done";
@@ -24,7 +24,11 @@ const App: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   // Add a new task with a dueDate from the form (or today if not provided)
-  const handleAddTask = (title: string, status: Task["status"], dueDate?: string) => {
+  const handleAddTask = (
+    title: string,
+    status: Task["status"],
+    dueDate?: string
+  ) => {
     const newTask: Task = {
       id: Date.now(),
       title,
