@@ -10,7 +10,8 @@ export interface Task {
   id: number;
   title: string;
   status: TaskStatus;
-  dueDate: string; // Added dueDate for timeline/calendar
+  startDate: string; // <-- Add this
+  dueDate: string;
 }
 
 const statusCycle: Record<TaskStatus, TaskStatus> = {
@@ -33,6 +34,7 @@ const App: React.FC = () => {
       id: Date.now(),
       title,
       status,
+      startDate: new Date().toISOString().split("T")[0], // Set startDate to today
       dueDate: dueDate || new Date().toISOString().split("T")[0],
     };
     setTasks((prev) => [...prev, newTask]);
