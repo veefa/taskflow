@@ -10,8 +10,9 @@ export interface Task {
   id: number;
   title: string;
   status: TaskStatus;
-  startDate: string; // <-- Add this
+  startDate: string;
   dueDate: string;
+  category?: string; // or project?: string
 }
 
 const statusCycle: Record<TaskStatus, TaskStatus> = {
@@ -28,14 +29,17 @@ const App: React.FC = () => {
   const handleAddTask = (
     title: string,
     status: Task["status"],
-    dueDate?: string
+    startDate?: string,
+    dueDate?: string,
+    category?: string
   ) => {
     const newTask: Task = {
       id: Date.now(),
       title,
       status,
-      startDate: new Date().toISOString().split("T")[0], // Set startDate to today
+      startDate: startDate || new Date().toISOString().split("T")[0], // Use provided startDate if available
       dueDate: dueDate || new Date().toISOString().split("T")[0],
+      category: category || "Uncategorized", // set category here
     };
     setTasks((prev) => [...prev, newTask]);
   };

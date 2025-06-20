@@ -3,7 +3,13 @@ import AddTaskForm from "./AddTaskForm";
 
 interface TaskListProps {
   tasks: Task[];
-  onAddTask: (title: string, status: TaskStatus, dueDate?: string) => void;
+  onAddTask: (
+    title: string,
+    status: TaskStatus,
+    startDate?: string,
+    dueDate?: string,
+    category?: string
+  ) => void;
   onStatusClick: (id: number) => void;
 }
 
@@ -19,7 +25,11 @@ const getStatusColor = (status: TaskStatus) => {
   }
 };
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onAddTask, onStatusClick }) => (
+const TaskList: React.FC<TaskListProps> = ({
+  tasks,
+  onAddTask,
+  onStatusClick,
+}) => (
   <section className="bg-white p-4 border-slate-300 border-r w-1/3">
     <h2 className="mb-4 font-semibold text-slate-800 text-lg">Your Tasks</h2>
     <AddTaskForm onAddTask={onAddTask} />
@@ -31,8 +41,16 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onAddTask, onStatusClick }) 
           <div>
             <div className="font-medium text-slate-700">{task.title}</div>
             <div className="text-slate-500 text-sm">
-              Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "--/--/----"}
+              Due:{" "}
+              {task.dueDate
+                ? new Date(task.dueDate).toLocaleDateString()
+                : "--/--/----"}
             </div>
+            {task.category && (
+              <div className="mt-1 text-slate-400 text-xs">
+                Category: {task.category}
+              </div>
+            )}
           </div>
           <button
             onClick={() => onStatusClick(task.id)}

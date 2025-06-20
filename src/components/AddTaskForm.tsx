@@ -9,7 +9,8 @@ interface AddTaskFormProps {
     title: string,
     status: TaskStatus,
     startDate?: string,
-    dueDate?: string
+    dueDate?: string,
+    category?: string // <-- add category here
   ) => void;
 }
 
@@ -23,24 +24,28 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
   const [startDate, setStartDate] = useState<string>("");
   // State for the due date input
   const [dueDate, setDueDate] = useState<string>("");
+  // State for the task category select
+  const [category, setCategory] = useState("Work"); // default value
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
     if (!title.trim()) return; // Do not submit if title is empty
 
-    // Call the parent handler to add the task
+    // Call the parent handler to add the task, now passing category
     onAddTask(
       title.trim(),
       status,
       startDate || undefined,
-      dueDate || undefined
+      dueDate || undefined,
+      category || "Uncategorized"
     );
     // Reset form fields after submission
     setTitle("");
     setStatus("not started");
     setStartDate("");
     setDueDate("");
+    setCategory("Work"); // reset category to default
   };
 
   return (
@@ -78,6 +83,17 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
         className="bg-white p-2 border border-slate-300 rounded w-full text-slate-700"
         placeholder="Due date"
       />
+      {/* Dropdown to select task category */}
+      <select
+        value={category}
+        onChange={e => setCategory(e.target.value)}
+        className="bg-white px-2 py-1 border border-slate-300 rounded text-slate-700"
+      >
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Health">Health</option>
+        <option value="">Uncategorized</option>
+      </select>
       {/* Submit button */}
       <button
         type="submit"
