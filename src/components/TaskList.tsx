@@ -25,6 +25,20 @@ const getStatusColor = (status: TaskStatus) => {
   }
 };
 
+const formatDurationTooltip = (startDate?: string, dueDate?: string) => {
+  if (!startDate && !dueDate) return "No dates assigned";
+  const start = startDate ? new Date(startDate) : null;
+  const due = dueDate ? new Date(dueDate) : null;
+  let tooltip = "";
+  if (start) {
+    tooltip += `Starts: ${start.toLocaleDateString()} `;
+  }
+  if (due) {
+    tooltip += `Due: ${due.toLocaleDateString()}`;
+  }
+  return tooltip.trim();
+};
+
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
   onAddTask,
@@ -56,7 +70,12 @@ const TaskList: React.FC<TaskListProps> = ({
             onClick={() => onStatusClick(task.id)}
             className={`text-xs px-2 py-1 rounded-full font-semibold ${getStatusColor(
               task.status
-            )} transition`}>
+            )} transition`}
+            title={
+              task.status +
+              " - " +
+              formatDurationTooltip(task.startDate, task.dueDate)
+            }>
             {task.status}
           </button>
         </div>

@@ -16,19 +16,6 @@ const categoryColors: { [key: string]: string } = {
   Uncategorized: "bg-gray-400",
 };
 
-// Replace your statusColors helper with this version for consistency:
-const getStatusColor = (status: TaskStatus) => {
-  switch (status) {
-    case "in progress":
-      return "bg-yellow-400 text-yellow-900";
-    case "done":
-      return "bg-green-400 text-green-900";
-    case "not started":
-    default:
-      return "bg-gray-300 text-gray-700";
-  }
-};
-
 // Helper to get all unique dates between min startDate and max dueDate
 const getTimelineDates = (tasks: Task[]) => {
   const allDates = tasks
@@ -75,13 +62,20 @@ const formatDurationTooltip = (start: string, end: string) => {
   })`;
 };
 
-const groupByCategory = (tasks: Task[]) => {
+// Add this helper near the top (replace groupByCategory):
+const groupByStatus = (tasks: Task[]) => {
   return tasks.reduce<Record<string, Task[]>>((groups, task) => {
-    const key = task.category || "Uncategorized";
+    const key = task.status;
     if (!groups[key]) groups[key] = [];
     groups[key].push(task);
     return groups;
   }, {});
+};
+
+const statusDotColor: { [key in TaskStatus]: string } = {
+  "not started": "bg-gray-400",
+  "in progress": "bg-yellow-400",
+  done: "bg-green-400",
 };
 
 const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
@@ -96,7 +90,7 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
       ? tasks
       : tasks.filter((task) => task.status === statusFilter);
 
-  const grouped = groupByCategory(filteredTasks);
+  const grouped = groupByStatus(filteredTasks);
 
   const timelineDates = getTimelineDates(filteredTasks);
   const timelineStart = timelineDates[0];
@@ -157,8 +151,11 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
           </div>
           {/* Grouped Task Bars */}
           <div className="space-y-8 mt-4">
-            {Object.entries(grouped).map(([category, tasks]) => (
-              <div key={category}>
+            {Object.entries(grouped).map(([status, tasks]) => (
+              <div key={status}>
+                <div className="mb-2 font-bold text-slate-700 capitalize">
+                  {status}
+                </div>
                 <div className="space-y-4">
                   {tasks.map((task) => {
                     const left =
@@ -175,12 +172,8 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
                       <div key={task.id} className="flex items-center">
                         <div className="flex items-center gap-2 pr-4 w-48">
                           <div
-                            className={`w-3 h-3 rounded-full ${
-                              categoryColors[
-                                task.category || "Uncategorized"
-                              ] || "bg-gray-400"
-                            }`}
-                            title={task.category || "Uncategorized"}
+                            className={`w-3 h-3 rounded-full ${statusDotColor[task.status]}`}
+                            title={task.status}
                           />
                           <span className="text-slate-600 text-xs">
                             {task.title}
@@ -195,9 +188,10 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
                           }}>
                           {valid && (
                             <div
-                              className={`absolute top-0 h-8 rounded cursor-pointer ${getStatusColor(
-                                task.status
-                              )} text-xs px-2 flex font-semibold items-center`}
+                              className={`absolute top-0 h-8 rounded cursor-pointer ${
+                                categoryColors[task.category || "Uncategorized"] ||
+                                "bg-gray-400"
+                              } text-white drop-shadow-sm text-xs px-2 flex items-center`}
                               style={{
                                 width: `${width}px`,
                                 left: `${left}px`,
@@ -208,7 +202,7 @@ const CalendarTimeline: React.FC<CalendarTimelineProps> = ({ tasks }) => {
                                 task.startDate,
                                 task.dueDate
                               )}>
-                              {task.status}
+                              {task.title}
                             </div>
                           )}
                         </div>
