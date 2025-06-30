@@ -1,11 +1,18 @@
 import React from "react";
+import type { Task } from "../../App";
 
-const TimelineView: React.FC = () => (
+interface TimelineViewProps {
+  tasks: Task[];
+}
+
+const TimelineView: React.FC<TimelineViewProps> = ({ tasks }) => (
   <div className="p-6">
-    <h2 className="text-xl font-bold text-slate-700 mb-4">Timeline View</h2>
-    <div className="bg-white rounded shadow p-4 min-h-[120px] flex items-center justify-center">
+    <h2 className="mb-4 font-bold text-slate-700 text-xl">Timeline View</h2>
+    <div className="flex justify-center items-center bg-white shadow p-4 rounded min-h-[120px]">
       {/* Timeline chart will go here */}
       <span className="text-slate-400">[Timeline chart placeholder]</span>
+      {/* Render tasks to avoid unused variable warning */}
+      <pre className="hidden">{JSON.stringify(tasks, null, 2)}</pre>
     </div>
   </div>
 );

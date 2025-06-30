@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import TaskList from "./components/TaskList";
-import CalendarTimeline from "./components/CalendarTimeline";
 import CalendarTabs from "./components/CalendarTabs";
+import MonthView from "./components/TaskViews/MonthView";
+import WeekView from "./components/TaskViews/WeekView";
+import TimelineView from "./components/TaskViews/TimelineView";
 
 // Define types here so all components can use them
 export type TaskStatus = "not started" | "in progress" | "done";
@@ -25,6 +27,7 @@ const statusCycle: Record<TaskStatus, TaskStatus> = {
 const App: React.FC = () => {
   // Centralized tasks state (start empty)
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTab, setActiveTab] = useState<"month" | "week" | "timeline">("month");
 
   // Add a new task with a dueDate from the form (or today if not provided)
   const handleAddTask = (
@@ -38,9 +41,9 @@ const App: React.FC = () => {
       id: Date.now(),
       title,
       status,
-      startDate: startDate || new Date().toISOString().split("T")[0], // Use provided startDate if available
+      startDate: startDate || new Date().toISOString().split("T")[0],
       dueDate: dueDate || new Date().toISOString().split("T")[0],
-      category: category || "Uncategorized", // set category here
+      category: category || "Uncategorized",
     };
     setTasks((prev) => [...prev, newTask]);
   };
@@ -67,22 +70,31 @@ const App: React.FC = () => {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex flex-col flex-1">
-          {/* Add CalendarTabs at the top of your main content area */}
-          <CalendarTabs />
+        {/* Main content area */}
+        <main className="flex flex-1">
+          {/* Task list and form always visible on the left */}
           <TaskList
             tasks={tasks}
             onAddTask={handleAddTask}
             onStatusClick={handleStatusClick}
           />
-          <CalendarTimeline tasks={tasks} />
-          {/* REMOVE or COMMENT this redundant section */}
-          {/*
-          <div className="p-4">
-            <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
-            <div className="mt-4">Current active tab: {activeTab}</div>
+          {/* Calendar section swaps based on activeTab */}
+          <div className="flex-1 flex flex-col">
+            <CalendarTabs activeTab={activeTab} onTabChange={setActiveTab} />
+            <div className="mt-6 flex-1">
+              {tasks.length === 0 ? (
+                <div className="text-slate-400 text-center pt-20">
+                  No tasks to display.
+                </div>
+              ) : (
+                <>
+                  {activeTab === "month" && <MonthView tasks={tasks} />}
+                  {activeTab === "week" && <WeekView tasks={tasks} />}
+                  {activeTab === "timeline" && <TimelineView tasks={tasks} />}
+                </>
+              )}
+            </div>
           </div>
-          */}
         </main>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { FaRegCalendarAlt, FaRegCalendar, FaChartBar } from "react-icons/fa";
 
 const tabOptions = [
@@ -7,11 +7,11 @@ const tabOptions = [
   { key: "timeline", label: "Timeline View", icon: <FaChartBar className="inline mr-2" /> },
 ] as const;
 
-type TabKey = typeof tabOptions[number]["key"];
 
-const CalendarTabs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>("timeline");
-
+const CalendarTabs: React.FC<{
+  activeTab: "month" | "week" | "timeline";
+  onTabChange: (tab: "month" | "week" | "timeline") => void;
+}> = ({ activeTab, onTabChange }) => {
   return (
     <div className="flex gap-2 mb-4 border-slate-200 border-b">
       {tabOptions.map((tab) => (
@@ -30,7 +30,7 @@ const CalendarTabs: React.FC = () => {
                 ? "3px solid #475569"
                 : "3px solid transparent",
           }}
-          onClick={() => setActiveTab(tab.key)}
+          onClick={() => onTabChange(tab.key)}
         >
           {tab.icon}
           {tab.label}
