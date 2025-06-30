@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import TaskList from "./components/TaskList";
@@ -24,10 +24,23 @@ const statusCycle: Record<TaskStatus, TaskStatus> = {
   done: "not started",
 };
 
+const TAB_KEY = "taskflow_activeTab";
+
 const App: React.FC = () => {
   // Centralized tasks state (start empty)
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [activeTab, setActiveTab] = useState<"month" | "week" | "timeline">("month");
+  // Read initial tab from localStorage, fallback to "month"
+  const [activeTab, setActiveTab] = useState<"month" | "week" | "timeline">(
+    () =>
+      (localStorage.getItem(TAB_KEY) as "month" | "week" | "timeline") ||
+      "month"
+  );
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // Save tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(TAB_KEY, activeTab);
+  }, [activeTab]);
 
   // Add a new task with a dueDate from the form (or today if not provided)
   const handleAddTask = (
@@ -74,21 +87,31 @@ const App: React.FC = () => {
         <main className="flex flex-1">
           {/* Task list and form always visible on the left */}
           <TaskList
-            tasks={tasks}
+            tasks={
+              selectedDate
+                ? tasks.filter((t) => t.dueDate === selectedDate)
+                : tasks
+            }
             onAddTask={handleAddTask}
             onStatusClick={handleStatusClick}
           />
           {/* Calendar section swaps based on activeTab */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex flex-col flex-1">
             <CalendarTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            <div className="mt-6 flex-1">
+            <div className="flex-1 mt-6">
               {tasks.length === 0 ? (
-                <div className="text-slate-400 text-center pt-20">
+                <div className="pt-20 text-slate-400 text-center">
                   No tasks to display.
                 </div>
               ) : (
                 <>
-                  {activeTab === "month" && <MonthView tasks={tasks} />}
+                  {activeTab === "month" && (
+                    <MonthView
+                      tasks={tasks}
+                      selectedDate={selectedDate}
+                      onDateSelect={setSelectedDate}
+                    />
+                  )}
                   {activeTab === "week" && <WeekView tasks={tasks} />}
                   {activeTab === "timeline" && <TimelineView tasks={tasks} />}
                 </>
