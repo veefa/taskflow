@@ -67,7 +67,7 @@ const App: React.FC = () => {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 flex flex-col">
+        <main className="flex flex-col flex-1">
           {/* Add CalendarTabs at the top of your main content area */}
           <CalendarTabs />
           <TaskList
@@ -76,6 +76,13 @@ const App: React.FC = () => {
             onStatusClick={handleStatusClick}
           />
           <CalendarTimeline tasks={tasks} />
+          {/* REMOVE or COMMENT this redundant section */}
+          {/*
+          <div className="p-4">
+            <TabSelector activeTab={activeTab} onTabChange={setActiveTab} />
+            <div className="mt-4">Current active tab: {activeTab}</div>
+          </div>
+          */}
         </main>
       </div>
     </div>
