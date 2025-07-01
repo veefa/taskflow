@@ -9,7 +9,7 @@ interface AddTaskFormProps {
     title: string,
     status: TaskStatus,
     startDate?: string,
-    dueDate?: string,
+    endDate?: string,
     category?: string // <-- add category here
   ) => void;
 }
@@ -22,8 +22,8 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
   const [status, setStatus] = useState<TaskStatus>("not started");
   // State for the start date input
   const [startDate, setStartDate] = useState<string>("");
-  // State for the due date input
-  const [dueDate, setDueDate] = useState<string>("");
+  // ✅ Fixed: use `endDate` instead of `dueDate`
+  const [endDate, setEndDate] = useState<string>("");
   // State for the task category select
   const [category, setCategory] = useState("Work"); // default value
 

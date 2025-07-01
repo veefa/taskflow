@@ -30,9 +30,7 @@ const CalendarTabs: React.FC<{
                 ? "3px solid #475569"
                 : "3px solid transparent",
           }}
-          onClick={() => {
-            if (activeTab !== tab.key) onTabChange(tab.key);
-          }}
+          onClick={() => onTabChange(tab.key)}
         >
           {tab.icon}
           {tab.label}

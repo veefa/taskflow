@@ -1,16 +1,18 @@
 import type { Task, TaskStatus } from "../App";
 import AddTaskForm from "./AddTaskForm";
 
-interface TaskListProps {
+export interface TaskListProps {
   tasks: Task[];
   onAddTask: (
     title: string,
     status: TaskStatus,
-    startDate?: string,
-    dueDate?: string,
+    startDate: string,
+    endDate: string,
+    startTime: string,
+    endTime?: string,
     category?: string
   ) => void;
-  onStatusClick: (id: number) => void;
+  onStatusClick: (id: string) => void;
 }
 
 const getStatusColor = (status: TaskStatus) => {
@@ -25,16 +27,23 @@ const getStatusColor = (status: TaskStatus) => {
   }
 };
 
-const formatDurationTooltip = (startDate?: string, dueDate?: string) => {
-  if (!startDate && !dueDate) return "No dates assigned";
+const formatDurationTooltip = (
+  startDate?: string,
+  endDate?: string,
+  endTime?: string
+) => {
+  if (!startDate && !endDate && !endTime) return "No dates assigned";
   const start = startDate ? new Date(startDate) : null;
-  const due = dueDate ? new Date(dueDate) : null;
+  const end = endDate ? new Date(endDate) : null;
   let tooltip = "";
   if (start) {
-    tooltip += `Starts: ${start.toLocaleDateString()} `;
+    tooltip += `Start: ${start.toLocaleDateString()} `;
   }
-  if (due) {
-    tooltip += `Due: ${due.toLocaleDateString()}`;
+  if (end) {
+    tooltip += `End: ${end.toLocaleDateString()} `;
+  }
+  if (endTime) {
+    tooltip += `End Time: ${endTime}`;
   }
   return tooltip.trim();
 };
@@ -51,14 +60,18 @@ const TaskList: React.FC<TaskListProps> = ({
       {tasks.map((task) => (
         <div
           key={task.id}
-          className="flex justify-between items-center bg-slate-100 p-3 border border-slate-300 rounded">
+          className="flex justify-between items-center bg-slate-100 p-3 border border-slate-300 rounded"
+        >
           <div>
             <div className="font-medium text-slate-700">{task.title}</div>
             <div className="text-slate-500 text-sm">
-              Due:{" "}
-              {task.dueDate
-                ? new Date(task.dueDate).toLocaleDateString()
+              Date:{" "}
+              {task.startDate
+                ? new Date(task.startDate).toLocaleDateString()
                 : "--/--/----"}
+              {task.startTime && (
+                <> @ {task.startTime}{task.endTime && ` - ${task.endTime}`}</>
+              )}
             </div>
             {task.category && (
               <div className="mt-1 text-slate-400 text-xs">
@@ -74,8 +87,9 @@ const TaskList: React.FC<TaskListProps> = ({
             title={
               task.status +
               " - " +
-              formatDurationTooltip(task.startDate, task.dueDate)
-            }>
+              formatDurationTooltip(task.startDate, task.endDate, task.endTime)
+            }
+          >
             {task.status}
           </button>
         </div>

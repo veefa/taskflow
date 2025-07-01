@@ -10,12 +10,14 @@ import TimelineView from "./components/TaskViews/TimelineView";
 // Define types here so all components can use them
 export type TaskStatus = "not started" | "in progress" | "done";
 export interface Task {
-  id: number;
+  id: string;
   title: string;
   status: TaskStatus;
-  startDate: string;
-  dueDate: string;
-  category?: string; // or project?: string
+  startDate: string;      // "YYYY-MM-DD"
+  endDate: string;        // "YYYY-MM-DD"
+  startTime: string;      // "HH:mm"
+  endTime?: string;       // "HH:mm", optional
+  category?: string;      // optional category field
 }
 
 const statusCycle: Record<TaskStatus, TaskStatus> = {
@@ -42,27 +44,31 @@ const App: React.FC = () => {
     localStorage.setItem(TAB_KEY, activeTab);
   }, [activeTab]);
 
-  // Add a new task with a dueDate from the form (or today if not provided)
+  // Add a new task
   const handleAddTask = (
     title: string,
     status: Task["status"],
-    startDate?: string,
-    dueDate?: string,
+    startDate: string,
+    endDate: string,
+    startTime: string,
+    endTime?: string,
     category?: string
   ) => {
     const newTask: Task = {
-      id: Date.now(),
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       title,
       status,
-      startDate: startDate || new Date().toISOString().split("T")[0],
-      dueDate: dueDate || new Date().toISOString().split("T")[0],
-      category: category || "Uncategorized",
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      category,
     };
     setTasks((prev) => [...prev, newTask]);
   };
 
   // Update a task's status
-  const updateTaskStatus = (id: number, newStatus: Task["status"]) => {
+  const updateTaskStatus = (id: string, newStatus: Task["status"]) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, status: newStatus } : task
@@ -71,7 +77,7 @@ const App: React.FC = () => {
   };
 
   // Handler to cycle status
-  const handleStatusClick = (id: number) => {
+  const handleStatusClick = (id: string) => {
     const task = tasks.find((t) => t.id === id);
     if (task) {
       updateTaskStatus(id, statusCycle[task.status]);
@@ -89,7 +95,7 @@ const App: React.FC = () => {
           <TaskList
             tasks={
               selectedDate
-                ? tasks.filter((t) => t.dueDate === selectedDate)
+                ? tasks.filter((t) => t.startDate === selectedDate)
                 : tasks
             }
             onAddTask={handleAddTask}
