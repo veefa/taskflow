@@ -99,36 +99,44 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
         {/* Task blocks (absolute positioning over the grid) */}
         {tasks.map((task) => {
           if (!task.startDate || !task.startTime) return null;
-          const col = getColIndex(weekDates, task.startDate);
-          if (col === -1) return null;
+
+          const colStart = getColIndex(weekDates, task.startDate);
+          if (colStart === -1) return null;
+
+          // If no endDate, treat it as single-day
+          let colEnd = colStart;
+          if (task.endDate) {
+            const tempEnd = getColIndex(weekDates, task.endDate);
+            if (tempEnd !== -1) {
+              colEnd = tempEnd;
+            }
+          }
+
           const top = getTopPx(task.startTime);
           const height = getHeightPx(task.startTime, task.endTime);
 
           return (
-             <div
-                key={task.id}
-                className="absolute pointer-events-none"
-                style={{
-                  gridColumn: `${col + 2} / span 1`,
-                  top: `${top + 88}px`,
-                  height: `${height}px`,
-                  width: "100%",
-                  zIndex: 10,
-                }}
-              >
-              {/* Add group class here */}
+            <div
+              key={task.id}
+              className="absolute pointer-events-none"
+              style={{
+                gridColumn: `${colStart + 2} / ${colEnd + 3}`, // +2 due to 1st col being time
+                top: `${top + 88}px`,
+                height: `${height}px`,
+                width: "100%",
+                zIndex: 10,
+              }}>
               <div className="group relative flex items-center px-1 w-full h-full pointer-events-auto">
                 {/* Tooltip */}
-                <span
-                  className="-bottom-8 left-1/2 z-10 absolute bg-slate-700 opacity-0 group-hover:opacity-100 px-2 py-1 rounded text-white text-xs whitespace-pre-line transition-opacity -translate-x-1/2 duration-200 ease-in-out pointer-events-none"
-                >
+                <span className="-bottom-8 left-1/2 z-10 absolute bg-slate-700 opacity-0 group-hover:opacity-100 px-2 py-1 rounded text-white text-xs whitespace-pre-line transition-opacity -translate-x-1/2 duration-200 ease-in-out pointer-events-none">
                   {task.title}
                 </span>
 
                 <div
                   className={`px-2 py-1 border rounded shadow text-xs w-full truncate text-slate-800
-                  ${getCategoryBgColor(task.category)} ${getStatusDotColor(task.status)}`}
-                >
+                  ${getCategoryBgColor(task.category)} ${getStatusDotColor(
+                    task.status
+                  )}`}>
                   <span>{task.title}</span>
                   {task.endTime && (
                     <span className="ml-1 text-[10px] text-slate-600">
