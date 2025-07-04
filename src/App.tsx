@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import Sidebar from "./components/Sidebar";
-import TaskList from "./components/TaskList";
-import CalendarTabs from "./components/CalendarTabs";
-import MonthView from "./components/TaskViews/MonthView";
-import WeekView from "./components/TaskViews/WeekView";
-import TimelineView from "./components/TaskViews/TimelineView";
+import Header from "./shared/components/Header";
+import Sidebar from "./shared/components/Sidebar";
+import TaskList from "./shared/components/TaskList";
+import CalendarTabs from "./shared/components/CalendarTabs";
+import MonthView from "./views/MonthView";
+import WeekView from "./views/WeekView";
+import TimelineView from "./views/TimelineView";
 
 // Define types here so all components can use them
 export type TaskStatus = "not started" | "in progress" | "done";

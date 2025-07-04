@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import type { Task } from "../../App";
+import type { Task } from "../App";
+import { getStatusDotColor, getCategoryBgColor } from "../shared/utils/Colors";
 
 // Props for MonthView: expects an array of tasks
 interface MonthViewProps {
@@ -13,32 +14,10 @@ interface MonthViewProps {
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Helper to get the Tailwind color class for a status dot
-const getStatusDotColor = (status: Task["status"]) => {
-  switch (status) {
-    case "done":
-      return "bg-green-400";
-    case "in progress":
-      return "bg-yellow-400";
-    case "not started":
-    default:
-      return "bg-gray-300";
-  }
-};
+
 
 // Helper to get the Tailwind color class for a category background
-const getCategoryBgColor = (category?: string) => {
-  switch (category) {
-    case "Work":
-      return "bg-blue-200";
-    case "Personal":
-      return "bg-green-200";
-    case "Health":
-      return "bg-pink-200";
-    // Add more categories as needed
-    default:
-      return "bg-slate-100";
-  }
-};
+
 
 // Utility to get all days in the current month as Date objects
 function getDaysInMonth(year: number, month: number) {
@@ -130,8 +109,8 @@ const MonthView: React.FC<MonthViewProps> = ({
       <div className="gap-2 grid grid-cols-7">
         {days.map((date) => {
           const dateStr = date.toLocaleDateString("en-CA"); // "YYYY-MM-DD" in local time
-          // Filter tasks for this day by dueDate
-          const dayTasks = tasks.filter((task) => task.dueDate === dateStr);
+          // Filter tasks for this day by endDate
+          const dayTasks = tasks.filter((task) => task.endDate === dateStr);
           // Highlight today
           const isToday = date.toDateString() === new Date().toDateString();
           return (
@@ -150,14 +129,10 @@ const MonthView: React.FC<MonthViewProps> = ({
                 {dayTasks.map((task) => (
                   <div
                     key={task.id}
-                    className={`group flex items-center gap-1 px-1 py-0.5 rounded text-slate-700 truncate ${getCategoryBgColor(
-                      task.category
-                    )}`}
+                    className={`group flex items-center gap-1 px-1 py-0.5 rounded text-slate-700 truncate ${getCategoryBgColor(task.category)}`}
                     title={task.title}>
                     <span
-                      className={`inline-block w-2 h-2 rounded-full ${getStatusDotColor(
-                        task.status
-                      )}`}
+                      className={`inline-block w-2 h-2 rounded-full ${getStatusDotColor(task.status)}`}
                       title={task.status}
                     />
                     <span className="truncate">{task.title}</span>

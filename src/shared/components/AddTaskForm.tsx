@@ -8,9 +8,11 @@ interface AddTaskFormProps {
   onAddTask: (
     title: string,
     status: TaskStatus,
-    startDate?: string,
-    endDate?: string,
-    category?: string // <-- add category here
+    startDate: string,
+    endDate: string,
+    startTime: string,
+    endTime?: string,
+    category?: string
   ) => void;
 }
 
@@ -22,8 +24,10 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
   const [status, setStatus] = useState<TaskStatus>("not started");
   // State for the start date input
   const [startDate, setStartDate] = useState<string>("");
-  // ✅ Fixed: use `endDate` instead of `dueDate`
-  const [endDate, setEndDate] = useState<string>("");
+  // State for the due date input
+  const [endDate, setEndDate] = useState<string>(""); // ✅ renamed
+  const [startTime, setStartTime] = useState<string>(""); // ✅ added
+  const [endTime, setEndTime] = useState<string>("");
   // State for the task category select
   const [category, setCategory] = useState("Work"); // default value
 
@@ -36,16 +40,20 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
     onAddTask(
       title.trim(),
       status,
-      startDate || undefined,
-      dueDate || undefined,
+      startDate,
+      endDate,
+      startTime,
+      endTime || undefined,
       category || "Uncategorized"
     );
     // Reset form fields after submission
     setTitle("");
     setStatus("not started");
     setStartDate("");
-    setDueDate("");
-    setCategory("Work"); // reset category to default
+    setEndDate("");
+    setStartTime("");
+    setEndTime("");
+    setCategory("Work");
   };
 
   return (
@@ -78,17 +86,33 @@ const AddTaskForm: React.FC<AddTaskFormProps> = ({ onAddTask }) => {
       {/* Date picker for due date */}
       <input
         type="date"
-        value={dueDate}
-        onChange={(e) => setDueDate(e.target.value)}
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
         className="bg-white p-2 border border-slate-300 rounded w-full text-slate-700"
-        placeholder="Due date"
+        placeholder="End date"
+      />
+      {/* Time picker for start time */}
+      <input
+        type="time"
+        value={startTime}
+        onChange={(e) => setStartTime(e.target.value)}
+        className="bg-white p-2 border border-slate-300 rounded w-full text-slate-700"
+        placeholder="Start time"
+      />
+
+      {/* Time picker for end time (optional) */}
+      <input
+        type="time"
+        value={endTime}
+        onChange={(e) => setEndTime(e.target.value)}
+        className="bg-white p-2 border border-slate-300 rounded w-full text-slate-700"
+        placeholder="End time (optional)"
       />
       {/* Dropdown to select task category */}
       <select
         value={category}
-        onChange={e => setCategory(e.target.value)}
-        className="bg-white px-2 py-1 border border-slate-300 rounded text-slate-700"
-      >
+        onChange={(e) => setCategory(e.target.value)}
+        className="bg-white px-2 py-1 border border-slate-300 rounded text-slate-700">
         <option value="Work">Work</option>
         <option value="Personal">Personal</option>
         <option value="Health">Health</option>

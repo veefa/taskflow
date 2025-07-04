@@ -1,4 +1,4 @@
-import type { Task, TaskStatus } from "../App";
+import type { Task, TaskStatus } from "../../App";
 import AddTaskForm from "./AddTaskForm";
 
 export interface TaskListProps {

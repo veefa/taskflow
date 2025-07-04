@@ -1,5 +1,6 @@
 import React from "react";
-import type { Task } from "../../App";
+import type { Task } from "../App";
+import { getStatusDotColor, getCategoryBgColor } from "../shared/utils/Colors";
 
 interface WeekViewProps {
   tasks: Task[];
@@ -12,7 +13,7 @@ const hours = Array.from(
 
 const getStartOfWeek = (date: Date) => {
   const day = date.getDay(); // 0 = Sunday
-  const diff = date.getDate() - day;
+  const diff = date.getDate() - (day === 0 ? 6 : day - 1); // Monday start
   const start = new Date(date);
   start.setDate(diff);
   start.setHours(0, 0, 0, 0);
@@ -22,12 +23,9 @@ const getStartOfWeek = (date: Date) => {
     return d;
   });
 };
-
 // Helper: get column index for a date string
 const getColIndex = (weekDates: Date[], dateStr: string) =>
-  weekDates.findIndex(
-    (d) => d.toISOString().split("T")[0] === dateStr
-  );
+  weekDates.findIndex((d) => d.toISOString().split("T")[0] === dateStr);
 
 // Helper: get top position (in px) for a given startTime
 const getTopPx = (startTime: string) => {
@@ -40,7 +38,7 @@ const getHeightPx = (start: string, end?: string) => {
   if (!end) return 48; // default 1 hour
   const [sh, sm] = start.split(":").map(Number);
   const [eh, em] = end.split(":").map(Number);
-  return ((eh + em / 60) - (sh + sm / 60)) * 48;
+  return (eh + em / 60 - (sh + sm / 60)) * 48;
 };
 
 const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
@@ -59,8 +57,7 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
               date.toDateString() === today.toDateString()
                 ? "text-slate-600 font-bold border-b-4 border-slate-600 bg-slate-300 hover:bg-slate-200 hover:shadow"
                 : "text-slate-600 border-b"
-            }`}
-          >
+            }`}>
             {date.toLocaleDateString("en-US", {
               weekday: "short",
               day: "numeric",
@@ -75,8 +72,7 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
         {weekDates.map((_, dayIndex) => (
           <div
             key={`allday-${dayIndex}`}
-            className="bg-slate-50 border border-slate-200 h-8"
-          ></div>
+            className="bg-slate-50 border border-slate-200 h-8"></div>
         ))}
 
         {/* Grid body */}
@@ -88,8 +84,7 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
             {weekDates.map((_, dayIndex) => (
               <div
                 key={`${hourIndex}-${dayIndex}`}
-                className="bg-white border border-slate-200 h-12 relative"
-              ></div>
+                className="relative bg-white border border-slate-200 h-12"></div>
             ))}
           </React.Fragment>
         ))}
@@ -105,19 +100,23 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
           return (
             <div
               key={task.id}
-              className="absolute left-0 px-[60px] w-full pointer-events-none"
+              className="absolute pointer-events-none"
               style={{
                 gridColumn: `${col + 2} / span 1`,
-                top: `${top + 88}px`, // 88px = header (40) + all-day row (32) + border
+                top: `${top + 88}px`,
                 height: `${height}px`,
+                width: "100%",
                 zIndex: 10,
-              }}
-            >
-              <div className="relative w-full h-full flex items-center pointer-events-auto">
-                <div className="bg-blue-200 text-blue-900 text-xs rounded px-2 py-1 shadow w-full truncate border border-blue-400">
-                  {task.title}
+              }}>
+              <div className="relative flex items-center px-1 w-full h-full pointer-events-auto">
+                <div
+                  className={`px-2 py-1 border rounded shadow text-xs w-full truncate text-slate-800
+        ${getCategoryBgColor(task.category)} ${getStatusDotColor(
+                    task.status
+                  )}`}>
+                  <span>{task.title}</span>
                   {task.endTime && (
-                    <span className="ml-1 text-[10px] text-blue-700">
+                    <span className="ml-1 text-[10px] text-slate-600">
                       ({task.startTime}–{task.endTime})
                     </span>
                   )}
