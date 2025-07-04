@@ -24,8 +24,15 @@ const getStartOfWeek = (date: Date) => {
   });
 };
 // Helper: get column index for a date string
+const toLocalDateString = (date: Date) => {
+  const y = date.getFullYear();
+  const m = (date.getMonth() + 1).toString().padStart(2, "0");
+  const d = date.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
 const getColIndex = (weekDates: Date[], dateStr: string) =>
-  weekDates.findIndex((d) => d.toISOString().split("T")[0] === dateStr);
+  weekDates.findIndex((d) => toLocalDateString(d) === dateStr);
 
 // Helper: get top position (in px) for a given startTime
 const getTopPx = (startTime: string) => {
