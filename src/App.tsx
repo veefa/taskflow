@@ -13,11 +13,11 @@ export interface Task {
   id: string;
   title: string;
   status: TaskStatus;
-  startDate: string;      // "YYYY-MM-DD"
-  endDate: string;        // "YYYY-MM-DD"
-  startTime: string;      // "HH:mm"
-  endTime?: string;       // "HH:mm", optional
-  category?: string;      // optional category field
+  startDate: string; // "YYYY-MM-DD"
+  endDate: string; // "YYYY-MM-DD"
+  startTime: string; // "HH:mm"
+  endTime?: string; // "HH:mm", optional
+  category?: string; // optional category field
 }
 
 const statusCycle: Record<TaskStatus, TaskStatus> = {
@@ -89,9 +89,9 @@ const App: React.FC = () => {
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        {/* Main content area */}
-        <main className="flex flex-1">
-          {/* Task list and form always visible on the left */}
+        {/* Main content area: TaskList + Calendar View side-by-side */}
+        <main className="flex flex-1 h-full">
+          {/* Task list sidebar: fixed width */}
           <TaskList
             tasks={
               selectedDate
@@ -101,8 +101,8 @@ const App: React.FC = () => {
             onAddTask={handleAddTask}
             onStatusClick={handleStatusClick}
           />
-          {/* Calendar section swaps based on activeTab */}
-          <div className="flex flex-col flex-1">
+          {/* Calendar section: fills remaining space, scrollable */}
+          <div className="flex-1 p-4 h-full overflow-auto">
             <CalendarTabs activeTab={activeTab} onTabChange={setActiveTab} />
             <div className="flex-1 mt-6">
               {tasks.length === 0 ? (

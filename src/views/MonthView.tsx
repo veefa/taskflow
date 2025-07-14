@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import type { Task } from "../App";
-import { getStatusDotColor, getCategoryBgColor } from "../shared/utils/Colors";
+import { getStatusDotColor, getCategoryBgColor } from "../shared/utils/colors";
 
 // Props for MonthView: expects an array of tasks
 interface MonthViewProps {
