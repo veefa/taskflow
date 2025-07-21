@@ -57,11 +57,25 @@ const getHeightPx = (start: string, end?: string) => {
 };
 
 const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
-  // State to track the base date for the current visible week
-  const [startDate, setStartDate] = useState(new Date());
+  // Use selectedDate for navigation and highlight
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Get week range based on the selected start date
-  const weekDates = getStartOfWeek(startDate);
+  // Calculate the start of the week (Monday) based on selectedDate
+  const weekDates = getStartOfWeek(selectedDate);
+
+  // Navigation handlers
+  const handlePrevious = () =>
+    setSelectedDate((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() - 1);
+      return d;
+    });
+  const handleNext = () =>
+    setSelectedDate((prev) => {
+      const d = new Date(prev);
+      d.setDate(d.getDate() + 1);
+      return d;
+    });
 
   return (
     <div className="p-4 overflow-x-auto">
@@ -69,51 +83,50 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
       <div className="flex justify-between items-center mb-4">
         <button
           className="flex items-center bg-slate-300 hover:bg-slate-400 px-2 py-1 rounded text-slate-700"
-          onClick={() => {
-            const newDate = new Date(startDate);
-            newDate.setDate(startDate.getDate() - 1); // Go to previous day
-            setStartDate(newDate);
-          }}>
+          onClick={handlePrevious}>
           <FaChevronLeft className="mr-1" />
-
         </button>
-
         <span className="font-semibold text-slate-700">
-  {weekDates[4].toLocaleDateString("default", {
-    day: "numeric",
-    month: "long",
-  })}
-</span>
-
+          {selectedDate.toLocaleDateString("default", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
+        </span>
         <button
           className="flex items-center bg-slate-300 hover:bg-slate-400 px-2 py-1 rounded text-slate-700"
-          onClick={() => {
-            const newDate = new Date(startDate);
-            newDate.setDate(startDate.getDate() + 1); // Go to next day
-            setStartDate(newDate);
-          }}>
+          onClick={handleNext}>
           <FaChevronRight className="ml-1" />
         </button>
       </div>
 
-      <div className="relative grid grid-cols-[60px_repeat(7,_1fr)] min-w-[700px]">
+      <div className="relative grid grid-cols-[60px_repeat(7,minmax(0,1fr))]">
         {/*  WEEKDAY HEADER  */}
-        <div></div> {/* Empty cell for time column header */}
-        {weekDates.map((date, index) => (
-          <div
-            key={index}
-            className={`text-center font-medium py-2 border-b ${
-              toLocalDateString(date) === toLocalDateString(new Date())
-                ? "text-slate-600 font-bold border-b-4 border-slate-600 bg-slate-300 hover:bg-slate-200 hover:shadow"
-                : "text-slate-600 border-b"
-            }`}>
-            {/* Show weekday name and date (e.g. Mon 1) */}
-            {date.toLocaleDateString("en-US", {
-              weekday: "short",
-              day: "numeric",
-            })}
-          </div>
-        ))}
+        {weekDates.map((date, index) => {
+          const isSelected =
+            toLocalDateString(date) === toLocalDateString(selectedDate);
+          const isToday =
+            toLocalDateString(date) === toLocalDateString(new Date());
+          return (
+            <div
+              key={index}
+              onClick={() => setSelectedDate(date)}
+              className={`cursor-pointer text-center font-medium py-2 border-b transition
+    ${
+      isSelected
+        ? "bg-blue-200 border-b-4 border-slate-600 font-bold text-slate-900"
+        : ""
+    }
+    ${isToday && !isSelected ? "bg-yellow-100" : ""}
+    ${!isSelected && !isToday ? "text-slate-600 border-b" : ""}
+    hover:bg-blue-100`}>
+              {date.toLocaleDateString("en-US", {
+                weekday: "short",
+                day: "numeric",
+              })}
+            </div>
+          );
+        })}
         {/*  ALL-DAY ROW  */}
         <div className="bg-slate-50 py-1 pr-2 border-b text-slate-400 text-xs">
           All-day
@@ -126,9 +139,10 @@ const WeekView: React.FC<WeekViewProps> = ({ tasks }) => {
         {/*  HOURLY GRID  */}
         {hours.map((hour, hourIndex) => (
           <React.Fragment key={hourIndex}>
-            {/* Time label on the left */}
+            {/* Time label FIRST */}
             <div className="py-1 pr-2 text-slate-400 text-xs">{hour}</div>
-            {/* 7 columns, one for each day */}
+
+            {/* Then the 7 weekday cells */}
             {weekDates.map((_, dayIndex) => (
               <div
                 key={`${hourIndex}-${dayIndex}`}
